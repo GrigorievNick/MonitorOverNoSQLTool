@@ -1,0 +1,26 @@
+{
+  "name": "pop-dashboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "bundle": "browserify client.js -t babelify -o client.dist.js",
+    "watch": "watchify client.js -t babelify -vd -o client.dist.js",
+    "postinstall": "npm run bundle"
+  },
+  "dependencies": {
+    "leap-js": "^0.2.0",
+    "react": "^15.2.1",
+    "react-dom": "^15.2.1",
+    "react-pivot": "^1.16.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.10.4",
+    "babel-polyfill": "^6.9.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.11.1",
+    "babelify": "^7.3.0",
+    "browserify": "^13.0.1",
+    "watchify": "^3.7.0"
+  }
+}

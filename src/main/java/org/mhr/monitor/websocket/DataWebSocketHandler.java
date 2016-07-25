@@ -19,8 +19,6 @@ import rx.Subscription;
 import static org.mhr.monitor.model.CommandEvent.Command.START;
 import static org.mhr.monitor.model.CommandEvent.Command.START_DONE;
 import static org.mhr.monitor.model.CommandEvent.Command.STOP;
-import static org.mhr.monitor.model.CommandEvent.Command.STOP_DONE;
-import static rx.Observable.just;
 
 @Component
 public class DataWebSocketHandler implements RxWebSocketHandler<TextMessage> {
@@ -40,27 +38,31 @@ public class DataWebSocketHandler implements RxWebSocketHandler<TextMessage> {
         final Observable<Event> requestStream = session.getInput()
             .map(TextMessage::getPayload)
             .map(SerializeUtils::fromJson)
-            .doOnNext(m -> logger.debug("< {}", m));
+            .doOnNext(m -> logger.debug("< {}", m))
+            .publish()
+            .refCount();
 
-        final Observable<CommandEvent> stopStream = requestStream
-                .map(e -> (CommandEvent) e)
-                .filter(commandEvent -> commandEvent.getCommand() == STOP);
+        final Observable<CommandEvent> stopEvent = requestStream
+            .map(e -> (CommandEvent) e)
+            .filter(commandEvent -> commandEvent.getCommand() == STOP)
+            .map(e -> new CommandEvent(START_DONE));
 
-        responseSubscribtion =
+        Observable<Event> startEvent =
             requestStream
+                .filter(e -> e instanceof CommandEvent)
                 .map(e -> (CommandEvent) e)
                 .filter(e -> e.getCommand() == START)
-                .flatMap(e ->
-                    e.getCommand() == START
-                        ? just((Event)new CommandEvent(START_DONE))
-                        .mergeWith(cache.replay().map(msg -> (Event)new DataEvent(msg)))
-                        .takeUntil(stopStream)
-                        : just((Event)new CommandEvent(STOP_DONE)))
-                .doOnNext(m -> logger.debug("< {}", m))
-                .map(SerializeUtils::toJson)
-                .map(TextMessage::new)
-                .doOnCompleted(() -> logger.debug("Session Close"))
-                .subscribe(session::sendMessage);
+                .flatMap(e -> cache.replay()
+                    .map(msg -> (Event) new DataEvent(msg))
+                    .startWith(new CommandEvent(START_DONE))
+                    .takeUntil(stopEvent));
+
+        responseSubscribtion = Observable.merge(startEvent, stopEvent)
+            .map(SerializeUtils::toJson)
+            .doOnNext(m -> logger.debug("< {}", m))
+            .map(TextMessage::new)
+            .doOnCompleted(() -> logger.debug("Session Close"))
+            .subscribe(session::sendMessage);
 
     }
 

@@ -27,7 +27,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         webSocketHandlerRegistry.addHandler(websocketHandler, "/websocket", "/websocket/*")
             .setAllowedOrigins("*")
-            .setHandshakeHandler(handshakeHandler)
-            .withSockJS();
+            .setHandshakeHandler(handshakeHandler);
     }
 }

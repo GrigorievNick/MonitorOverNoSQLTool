@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import rx.Observable;
 import rx.Subscription;
+import rx.subjects.BehaviorSubject;
 
 import static java.util.concurrent.TimeUnit.valueOf;
 

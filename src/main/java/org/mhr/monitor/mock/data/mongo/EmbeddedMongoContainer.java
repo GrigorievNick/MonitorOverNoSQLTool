@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.function.Consumer;
 import org.bson.Document;
-import org.springframework.stereotype.Component;
 
 public class EmbeddedMongoContainer {
 

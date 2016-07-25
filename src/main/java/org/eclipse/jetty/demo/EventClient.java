@@ -12,7 +12,6 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.mhr.monitor.model.CommandEvent.Command.START;
 import static org.mhr.monitor.model.CommandEvent.Command.STOP;
