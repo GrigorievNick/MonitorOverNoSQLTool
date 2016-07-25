@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite verbose="0" name="Failed suite [Command line suite]">
+  <test name="Command line test" preserve-order="false">
+    <classes>
+      <class name="DaoIntgerationTest"/>
+      <class name="SerializeUtilsTest"/>
+      <class name="TestEmbededMongo"/>
+    </classes>
+  </test> <!-- Command line test -->
+  <test name="Command line test(failed)">
+    <classes>
+      <class name="DaoIntgerationTest">
+        <methods>
+          <include name="springTestContextBeforeTestClass"/>
+          <include name="test"/>
+          <include name="springTestContextPrepareTestInstance"/>
+          <include name="springTestContextAfterTestClass"/>
+          <include name="springTestContextBeforeTestMethod"/>
+          <include name="springTestContextAfterTestMethod"/>
+        </methods>
+      </class> <!-- DaoIntgerationTest -->
+      <class name="TestEmbededMongo">
+        <methods>
+          <include name="stopMongo"/>
+          <include name="startMongo"/>
+        </methods>
+      </class> <!-- TestEmbededMongo -->
+    </classes>
+  </test> <!-- Command line test(failed) -->
+</suite> <!-- Failed suite [Command line suite] -->

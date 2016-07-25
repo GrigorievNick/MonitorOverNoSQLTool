@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="springPortfolio">
+<head>
+    <meta charset="utf-8">
+    <title>Bank Monitor Tools</title>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <link href="webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/portfolio.css" rel="stylesheet">
+    <!-- 3rd party -->
+    <script src="webjars/babel/5.8.29-1/browser.min.js"></script>
+    <script src="webjars/bootstrap/js/bootstrap.js"></script>
+    <script src="webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="webjars/react/15.1.0/react.js"></script>
+    <script src="webjars/react/15.1.0/react-dom.js"></script>
+
+</head>
+<body>
+<div id="content">
+
+</div>
+
+
+<!-- application -->
+<script type="text/babel">
+    var CommentBox = React.createClass({
+        render: function() {
+            return (
+                    <div className="commentBox">
+                        Hello, world! I am a CommentBox.
+                    </div>
+            );
+        }
+    });
+    ReactDOM.render( <CommentBox/>, document.getElementById('content'));
+</script>
+<!--<script src="static/js/app.js"></script>-->
+
+</body>
+</html>
