@@ -41,6 +41,8 @@ DLWS.dataStream
                 columns={columns}
                 style={{height: 500}}
                 //withColumnMenu={false}
+                emptyText={'No records'}
+                loading={true}
             />,
             mountNode
         )

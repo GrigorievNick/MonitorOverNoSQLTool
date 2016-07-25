@@ -1,6 +1,5 @@
 package org.mhr.monitor.websocket;
 
-import java.util.concurrent.TimeUnit;
 import org.mhr.monitor.model.CommandEvent;
 import org.mhr.monitor.model.DataEvent;
 import org.mhr.monitor.model.Event;
