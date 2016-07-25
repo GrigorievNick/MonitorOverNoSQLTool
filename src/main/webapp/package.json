@@ -11,8 +11,8 @@
   "dependencies": {
     "leap-js": "^0.2.0",
     "react": "^15.2.1",
-    "react-dom": "^15.2.1",
-    "react-pivot": "^1.16.0"
+    "react-datagrid": "^2.1.1",
+    "react-dom": "^15.2.1"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",
