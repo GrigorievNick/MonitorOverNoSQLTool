@@ -7,6 +7,7 @@ TODO:
 - Mongo serialisation to custom model
 - Cache must support 3 different OPeration type
 - Meta data api (rest/ws ...)
+- dont forget finish Auth flow
 
 How to build:
 run npm install in webapp dir

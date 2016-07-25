@@ -1,5 +1,6 @@
 package org.mhr.monitor.websocket;
 
+import java.util.concurrent.TimeUnit;
 import org.mhr.monitor.model.CommandEvent;
 import org.mhr.monitor.model.DataEvent;
 import org.mhr.monitor.model.Event;
@@ -16,9 +17,11 @@ import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorato
 import rx.Observable;
 import rx.Subscription;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mhr.monitor.model.CommandEvent.Command.START;
 import static org.mhr.monitor.model.CommandEvent.Command.START_DONE;
 import static org.mhr.monitor.model.CommandEvent.Command.STOP;
+import static org.mhr.monitor.model.CommandEvent.Command.STOP_DONE;
 
 @Component
 public class DataWebSocketHandler implements RxWebSocketHandler<TextMessage> {
@@ -45,7 +48,7 @@ public class DataWebSocketHandler implements RxWebSocketHandler<TextMessage> {
         final Observable<CommandEvent> stopEvent = requestStream
             .map(e -> (CommandEvent) e)
             .filter(commandEvent -> commandEvent.getCommand() == STOP)
-            .map(e -> new CommandEvent(START_DONE));
+            .map(e -> new CommandEvent(STOP_DONE));
 
         Observable<Event> startEvent =
             requestStream
@@ -62,6 +65,9 @@ public class DataWebSocketHandler implements RxWebSocketHandler<TextMessage> {
             .doOnNext(m -> logger.debug("< {}", m))
             .map(TextMessage::new)
             .doOnCompleted(() -> logger.debug("Session Close"))
+            .publish()
+            .refCount()
+            .throttleWithTimeout(500, MILLISECONDS)
             .subscribe(session::sendMessage);
 
     }

@@ -1,6 +1,6 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
-var DataGrid = require('react-datagrid');
+const DataGrid = require('react-datagrid');
 
 const mountNode = document.getElementById('content');
 
@@ -12,10 +12,13 @@ setTimeout(() => {
     DLWS.send({"type": "Command", "command": "START"})
 }, 2000)
 
+var msgArr = [];
+const columns = []
+
 //.skip handshake
 DLWS.dataStream
     .skip(1)
-    .take(100)
+    .take(5)
     .map(x => JSON.parse(x.data))
     .filter(x => x.type === 'Data')
     //.do(x => console.log(x))
@@ -26,14 +29,15 @@ DLWS.dataStream
         })
     )
     .subscribe(data => {
-        const columns = data.map(x => {
-            return {name: x.title, title: x.title}
-        });
+        columns.push(data.map(x => {
+            return {name: x.title}
+        }));
+        msgArr.push(data)
 
         ReactDOM.render(
             <DataGrid
-                idProperty='id'
-                dataSource={data}
+                idProperty='_id'
+                dataSource={msgArr}
                 columns={columns}
                 style={{height: 500}}
                 //withColumnMenu={false}
