@@ -36,7 +36,7 @@ DLWS.dataStream
 
         ReactDOM.render(
             <DataGrid
-                idProperty='_id'
+                idProperty='_ts'
                 dataSource={msgArr}
                 columns={columns}
                 style={{height: 500}}
@@ -47,4 +47,3 @@ DLWS.dataStream
             mountNode
         )
     }, () => void 0, () => DLWS.send({"type": "Command", "command": "STOP"}));
-

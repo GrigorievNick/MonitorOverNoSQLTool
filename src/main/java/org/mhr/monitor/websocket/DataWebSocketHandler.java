@@ -64,8 +64,6 @@ public class DataWebSocketHandler implements RxWebSocketHandler<TextMessage> {
             .doOnNext(m -> logger.debug("< {}", m))
             .map(TextMessage::new)
             .doOnCompleted(() -> logger.debug("Session Close"))
-            .publish()
-            .refCount()
             .throttleWithTimeout(500, MILLISECONDS)
             .subscribe(session::sendMessage);
 

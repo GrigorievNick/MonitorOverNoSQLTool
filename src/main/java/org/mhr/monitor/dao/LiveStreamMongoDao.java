@@ -1,9 +1,12 @@
 package org.mhr.monitor.dao;
 
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.reactivestreams.client.MongoClient;
 import java.util.concurrent.TimeUnit;
+import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.mhr.monitor.model.Msg;
 import org.mhr.monitor.model.OperationType;
@@ -11,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import rx.Observable;
 
+import static com.google.common.base.Predicates.not;
+import static com.google.common.collect.Maps.filterKeys;
 import static com.mongodb.client.model.Filters.and;
 import static org.mhr.monitor.mock.data.mongo.EmbeddedMongoContainer.DATABASE_NAME;
 import static org.mhr.monitor.mock.data.mongo.MongoClientUtils.createCursor;
@@ -18,7 +23,7 @@ import static org.mhr.monitor.model.OperationType.valueOf;
 import static rx.RxReactiveStreams.toObservable;
 
 @Component
-public class MongoDao implements ILiveStreamDao {
+public class LiveStreamMongoDao implements ILiveStreamDao {
 
     @Autowired
     private MongoClient client;
@@ -27,14 +32,18 @@ public class MongoDao implements ILiveStreamDao {
     public Observable<Msg> find(OperationType type) {
         final Bson operationType = Filters.eq("operationType", type.name());
         final Bson ts = Filters.gte("_ts", System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1));
-        return toObservable(createCursor(and(ts, operationType), client, DATABASE_NAME, "logs"))
-            .map(document -> new Msg(document.getLong("_ts"), valueOf(document.getString("operationType")), document));
+        return toObservable(createCursor(and(ts, operationType), client, DATABASE_NAME, "logs")).map(this::convertToMsg);
     }
 
     @Override
     public Observable<Msg> find() {
         final Bson ts = Filters.gte("_ts", System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1));
-        return toObservable(createCursor(ts, client, DATABASE_NAME, "logs"))
-            .map(document -> new Msg(document.getLong("_ts"), valueOf(document.getString("operationType")), document));
+        return toObservable(createCursor(ts, client, DATABASE_NAME, "logs")).map(this::convertToMsg);
+    }
+
+    private Msg convertToMsg(Document document) {
+        return new Msg(document.getLong("_ts"),
+            valueOf(document.getString("operationType")),
+            filterKeys(document, Predicates.and(not("_id"::equals), not("_ts"::equals), not("operationType"::equals))));
     }
 }

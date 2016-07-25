@@ -10,6 +10,5 @@ TODO:
 - dont forget finish Auth flow
 
 How to build:
-run npm install in webapp dir
 mvn clean install 
-mvn spring-boot:run in root dir
+mvn spring-boot:run 
