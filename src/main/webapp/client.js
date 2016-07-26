@@ -13,36 +13,40 @@ setTimeout(() => {
 }, 2000)
 
 var msgArr = [];
-const columns = []
+var columns = [];
 
 //.skip handshake
 DLWS.dataStream
     .skip(1)
-    .take(5)
+    //.take(5)
     .map(x => JSON.parse(x.data))
     .filter(x => x.type === 'Data')
     //.do(x => console.log(x))
     .map(x => x.msg.operationBody)
-    .map(x =>
-        Object.keys(x).map((x, y) => {
-            return {title: x, data: y}
-        })
-    )
     .subscribe(data => {
-        columns.push(data.map(x => {
-            return {name: x.title}
-        }));
-        msgArr.push(data)
-
+        if (typeof columns === 'undefined' || columns.length <= 0) {
+            columns = Object.keys(data).map((x) => { return {name: x} });
+        }
+        msgArr.push(data);
+        //function dataSource
         ReactDOM.render(
             <DataGrid
-                idProperty='_ts'
-                dataSource={msgArr}
+                idProperty={columns[0].name}
+                dataSource={(query) => { return msgArr.slice(query.skip, query.pageSize); }}
                 columns={columns}
                 style={{height: 500}}
                 //withColumnMenu={false}
                 emptyText={'No records'}
-                loading={true}
+                pagination={true}
+                defaultPageSize={10}
+                paginationToolbarProps={{
+				pageSizes: [
+				    10,
+					100,
+					1000,
+					2000
+				]
+			}}
             />,
             mountNode
         )

@@ -68,7 +68,7 @@ public class LiveStream {
         final ImmutableMap.Builder<String, Object> opBuilder = ImmutableMap.<String, Object>builder()
             .put(MongoClientUtils.TIME_COLUMN, System.currentTimeMillis());
         for (int i = 0; i < 50; i++) {
-            opBuilder.put("Column " + i, i);
+            opBuilder.put("Column_" + i, i);
         }
         Map<String, Object> map = opBuilder.build();
 

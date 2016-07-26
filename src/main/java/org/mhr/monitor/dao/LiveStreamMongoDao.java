@@ -1,7 +1,6 @@
 package org.mhr.monitor.dao;
 
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.reactivestreams.client.MongoClient;
@@ -42,6 +41,7 @@ public class LiveStreamMongoDao implements ILiveStreamDao {
     }
 
     private Msg convertToMsg(Document document) {
+        //noinspection unchecked
         return new Msg(document.getLong("_ts"),
             valueOf(document.getString("operationType")),
             filterKeys(document, Predicates.and(not("_id"::equals), not("_ts"::equals), not("operationType"::equals))));
