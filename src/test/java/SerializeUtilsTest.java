@@ -1,6 +1,5 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.Date;
 import org.mhr.monitor.model.CommandEvent;
 import org.mhr.monitor.model.DataEvent;
 import org.mhr.monitor.model.Event;
@@ -9,6 +8,7 @@ import org.mhr.monitor.model.SerializeUtils;
 import org.testng.annotations.Test;
 
 import static com.google.common.collect.ImmutableMap.of;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singletonList;
 import static org.mockito.internal.util.collections.Sets.newSet;
 import static org.testng.Assert.assertEquals;
@@ -58,8 +58,8 @@ public class SerializeUtilsTest {
     public void testTimeRange() throws IOException {
         final CommandEvent actual =
             new CommandEvent(CommandEvent.Command.START, newSet("field1"), OperationType.WIDTHRAW, null, null,
-                new CommandEvent.ResolvableDateTime(new Date(), false),
-                new CommandEvent.ResolvableDateTime(new Date(System.currentTimeMillis() + 5000), true));
+                new CommandEvent.ResolvableDateTime(currentTimeMillis(), false),
+                new CommandEvent.ResolvableDateTime(currentTimeMillis() + 5000, true));
         final String s = SerializeUtils.toJson(actual);
         System.out.println(s);
         final Event expected = SerializeUtils.fromJson(s);

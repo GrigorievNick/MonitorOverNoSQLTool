@@ -48,9 +48,9 @@ public class Cache {
         }
         if (cEvent.getEnd() != null && cEvent.getStart() != null) {
             filtered = filtered
-                .skipWhile(d -> d.getTs() < cEvent.getStart().getDate().getTime())
-                .takeUntil(d -> d.getTs() > cEvent.getStart().getDate().getTime()
-                    && d.getTs() < cEvent.getEnd().getDate().getTime());
+                .skipWhile(d -> d.getTs() < cEvent.getStart().getDate())
+                .takeUntil(d -> d.getTs() > cEvent.getStart().getDate()
+                    && d.getTs() < cEvent.getEnd().getDate());
         }
         return filtered;
     }

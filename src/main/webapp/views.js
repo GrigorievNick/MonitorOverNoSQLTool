@@ -4,11 +4,25 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
+import Datetime from 'react-datetime';
+import Toggle from 'material-ui/Toggle';
+import { BehaviorSubject } from 'rxjs';
 
-const MyRadioButtons = (cb) => (
+const opTypeBehave = new BehaviorSubject();
+const startDateBehave = new BehaviorSubject();
+const endDateBehave = new BehaviorSubject();
+const liveBehave = new BehaviorSubject();
+
+const switchLive = (isLive) => liveBehave.next(isLive);
+const switchFromTime = (dateTime) => startDateBehave.next(dateTime);
+const switchToTime = (dateTime) => endDateBehave.next(dateTime);
+const switchOp = (event, opType) => opTypeBehave.next(opType);
+
+
+const MyRadioButtons = () => (
     <MuiThemeProvider>
         <div>
-            <RadioButtonGroup defaultSelected="WIDTHRAW" onChange={cb}>
+            <RadioButtonGroup defaultSelected="WIDTHRAW" onChange={switchOp}>
                 <RadioButton
                     value="WIDTHRAW"
                     label="WIDTHRAW"
@@ -22,6 +36,37 @@ const MyRadioButtons = (cb) => (
                     label="TRANSFER"
                 />
             </RadioButtonGroup>
+        </div>
+    </MuiThemeProvider>
+);
+
+const MyTimePickerStart = () => (
+        <div>
+            <span>Start</span>
+            <Datetime
+                onChange={switchFromTime}
+            />
+        </div>
+);
+
+const MyTimePickerEnd = () => (
+    <div>
+        <span>End</span>
+        <Datetime
+            onChange={switchToTime}
+        />
+    </div>
+);
+
+
+const NowButton = () => (
+    <MuiThemeProvider>
+        <div>
+            <Toggle
+                label="Live mode"
+                onToggle={switchLive}
+                defaultToggled={true}
+            />
         </div>
     </MuiThemeProvider>
 );
@@ -51,5 +96,6 @@ const Table = (data, isLoading = false) => {
     />)
 };
 
-export {Table, MyRadioButtons}
+export {Table, MyRadioButtons, MyTimePickerStart, MyTimePickerEnd, NowButton,
+    opTypeBehave, liveBehave, startDateBehave, endDateBehave}
 

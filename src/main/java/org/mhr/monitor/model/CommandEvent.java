@@ -69,13 +69,13 @@ public class CommandEvent extends Event {
     public static class ResolvableDateTime {
 
         @JsonSerialize
-        private final Date date;
+        private final Long date;
 
         @JsonSerialize
         private final boolean live;
 
         @JsonCreator(mode = JsonCreator.Mode.DEFAULT)
-        public ResolvableDateTime(@JsonProperty("date") Date date, @JsonProperty("live") boolean live) {
+        public ResolvableDateTime(@JsonProperty("date") Long date, @JsonProperty("live") boolean live) {
             this.date = date;
             this.live = live;
         }
