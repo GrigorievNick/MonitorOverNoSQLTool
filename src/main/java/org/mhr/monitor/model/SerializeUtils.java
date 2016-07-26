@@ -2,11 +2,12 @@ package org.mhr.monitor.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import java.io.IOException;
 
 public class SerializeUtils {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().setDateFormat(new ISO8601DateFormat());
 
     public static String toJson(Event event)  {
         try {

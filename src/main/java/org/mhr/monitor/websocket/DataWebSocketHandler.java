@@ -1,7 +1,6 @@
 package org.mhr.monitor.websocket;
 
 import org.mhr.monitor.model.CommandEvent;
-import org.mhr.monitor.model.DataEvent;
 import org.mhr.monitor.model.Event;
 import org.mhr.monitor.model.SerializeUtils;
 import org.mhr.monitor.service.Cache;
@@ -54,8 +53,8 @@ public class DataWebSocketHandler implements RxWebSocketHandler<TextMessage> {
                 .filter(e -> e instanceof CommandEvent)
                 .map(e -> (CommandEvent) e)
                 .filter(e -> e.getCommand() == START)
-                .flatMap(e -> cache.replay()
-                    .map(msg -> (Event) new DataEvent(msg))
+                .flatMap(e -> cache.replay(e)
+                    .map(msg ->(Event) msg)
                     .startWith(new CommandEvent(START_DONE))
                     .takeUntil(stopEvent));
 

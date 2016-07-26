@@ -62,6 +62,7 @@ public class LiveStream {
     }
 
     @Scheduled(fixedRateString = "${mock.data.generation.rate:1000}")
+    //TODO over observable
     public void write() {
         final MongoDatabase database = client.getDatabase(DATABASE_NAME);
         final MongoCollection<Document> collection = database.getCollection(MongoClientUtils.COLLECTION_NAME);

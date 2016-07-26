@@ -4,15 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "bundle": "browserify client.js -t babelify -o client.dist.js",
-    "watch": "watchify client.js -t babelify -vd -o client.dist.js",
+    "bundle": "NODE_ENV=production browserify client.js -t babelify -o client.dist.js",
+    "watch": "NODE_ENV=production watchify client.js -t babelify -vd -o client.dist.js",
     "postinstall": "npm run bundle"
   },
   "dependencies": {
     "leap-js": "^0.2.0",
+    "material-ui": "^0.15.2",
     "react": "^15.2.1",
     "react-datagrid": "^2.1.1",
-    "react-dom": "^15.2.1"
+    "react-dom": "^15.2.1",
+    "rxjs": "^5.0.0-beta.10"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",
