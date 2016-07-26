@@ -59,13 +59,14 @@ const MyTimePickerEnd = () => (
 );
 
 
-const NowButton = () => (
+const NowButton = (disable = true) => (
     <MuiThemeProvider>
         <div>
             <Toggle
                 label="Live mode"
                 onToggle={switchLive}
                 defaultToggled={true}
+                disabled={disable}
             />
         </div>
     </MuiThemeProvider>

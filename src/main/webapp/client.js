@@ -1,3 +1,4 @@
+import moment from 'moment'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { StreamAPI } from 'leap-js';
@@ -21,25 +22,33 @@ liveBehave.subscribe(isLive => {
     }
 });
 
-//startDateBehave.subscribe(x => DLWS.send({"type": "Command", "command": "STOP"}))
+startDateBehave.subscribe(x => {
+    ReactDOM.render(new NowButton(false), liveNode)
+})
 //endDateBehave.subscribe(x => DLWS.send({"type": "Command", "command": "STOP"}))
 
 
 const stopResponse = DLWS.dataStream
     .filter(x => x.type !== 'open')
-    .do(x => console.log(x))
     .map(x => JSON.parse(x.data))
     .filter(x => x.command === 'STOP_DONE')
     .map(x => [opTypeBehave.getValue(), liveBehave.getValue(), startDateBehave.getValue(), endDateBehave.getValue()])
     .map(([opType, isLive, startDate, endDate]) => {
-        return {"type": "Command", "command": "START", "operationType": opType }
+        const newCmd = {"type": "Command", "command": "START", "operationType": opType};
+        if (isLive && startDate) {
+            newCmd.start = {date: moment(startDate).unix(), live: false}
+            newCmd.end = {date: moment(endDate).unix(), live: true}
+        } else if (startDate && endDate) {
+            newCmd.start = {date: moment(startDate).unix(), live: false}
+            newCmd.end = {date: moment(endDate).unix(), live: false}
+        }
+        return newCmd
     });
 
-stopResponse
-    .subscribe((cmd) => runSubscriber(cmd));
+stopResponse.subscribe((cmd) => runSubscriber(cmd));
 
 
-const runSubscriber = (value = {"type": "Command", "command": "START", "operationType": 'WIDTHRAW' }) => {
+const runSubscriber = (value = {"type": "Command", "command": "START", "operationType": 'WIDTHRAW'}) => {
     DLWS.send(value)
     DLWS.dataStream
         .filter(x => x.type !== 'open')
@@ -57,7 +66,6 @@ const runSubscriber = (value = {"type": "Command", "command": "START", "operatio
         });
 };
 
-//"start":{"date":1469527320718,"live":false},"end":{"date":1469527325718,"live":true}}
 const init = () => {
     // Because of bug in lib
     setTimeout(() => {

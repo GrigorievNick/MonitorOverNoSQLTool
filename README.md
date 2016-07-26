@@ -2,7 +2,7 @@
 TODO:
 - Separate CommandEvent to Different Request Model
 - batch sent to ui
-- settable TIME Window on UI
+- settable TIME Window on UI: validation of time range, toggle behavior
 - Error handling and error reporting to UI
 - Meta data api (rest/ws ...): take opType and Date Range  and default isLive
 - dont forget finish Auth flow

@@ -2,10 +2,8 @@ package org.mhr.monitor.dao;
 
 
 import com.google.common.base.Predicates;
-import com.google.common.collect.Maps;
 import com.mongodb.client.model.Filters;
 import com.mongodb.reactivestreams.client.MongoClient;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -17,7 +15,6 @@ import rx.Observable;
 
 import static com.google.common.base.Predicates.not;
 import static com.google.common.collect.Maps.filterKeys;
-import static com.google.common.collect.Maps.transformEntries;
 import static com.mongodb.client.model.Filters.and;
 import static org.mhr.monitor.mock.data.mongo.EmbeddedMongoContainer.DATABASE_NAME;
 import static org.mhr.monitor.mock.data.mongo.MongoClientUtils.createCursor;
@@ -47,12 +44,11 @@ public class LiveStreamMongoDao implements ILiveStreamDao {
         //noinspection unchecked
         return new DataEvent(document.getLong("_ts"),
             valueOf(document.getString("operationType")),
-            transformEntries(filterKeys(document, Predicates.and(not("_id"::equals)
-                /*, not("_ts"::equals), not("operationType"::equals) */)),
-                (key, value) -> {
-                    if(key.equalsIgnoreCase("_ts"))
-                        return new Date((Long)value);
-                    return value;
-                }));
+            filterKeys(document, Predicates.and(not("_id"::equals)
+                /*
+                , not("_ts"::equals),
+                not("operationType"::equals)
+                */
+            )));
     }
 }
