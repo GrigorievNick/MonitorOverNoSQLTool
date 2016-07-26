@@ -1,4 +1,4 @@
-package org.eclipse.jetty.demo;
+package org.mhr.monitor.smoke.check;
 
 import java.io.FileNotFoundException;
 import java.net.URI;

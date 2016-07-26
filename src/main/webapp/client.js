@@ -22,10 +22,14 @@ liveBehave.subscribe(isLive => {
     }
 });
 
-startDateBehave.subscribe(x => {
-    ReactDOM.render(new NowButton(false), liveNode)
-})
-//endDateBehave.subscribe(x => DLWS.send({"type": "Command", "command": "STOP"}))
+Observable.combineLatest(startDateBehave, endDateBehave).subscribe(([startDate, endDate]) => {
+    if (startDate && endDate) {
+        ReactDOM.render(new NowButton(false, false), liveNode)
+    } else if (startDate && !endDate) {
+        ReactDOM.render(new NowButton(false, true), liveNode)
+    }
+
+});
 
 
 const stopResponse = DLWS.dataStream
