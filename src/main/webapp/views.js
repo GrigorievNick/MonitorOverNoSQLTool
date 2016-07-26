@@ -81,7 +81,7 @@ const pager = (data, query) =>
 
 const Table = (data, isLoading = false) => {
     const columns = Object.keys(data[0]).map((x) => {
-        return {name: x}
+        return {name: x, width: 150}
     });
 
     return (<DataGrid

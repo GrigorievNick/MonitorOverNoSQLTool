@@ -7,6 +7,7 @@ import org.mhr.monitor.service.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -32,6 +33,9 @@ public class DataWebSocketHandler implements RxWebSocketHandler<TextMessage> {
 
     @Autowired
     private Cache cache;
+
+    @Value("${websocket.sent.rate:500}")
+    private Integer throttlingTime;
 
     @Override
     public void afterConnectionEstablished(RxWebSocketSession<TextMessage> session) {
@@ -63,7 +67,7 @@ public class DataWebSocketHandler implements RxWebSocketHandler<TextMessage> {
             .doOnNext(m -> logger.debug("< {}", m))
             .map(TextMessage::new)
             .doOnCompleted(() -> logger.debug("Session Close"))
-            .throttleWithTimeout(500, MILLISECONDS)
+            .throttleWithTimeout(throttlingTime, MILLISECONDS)
             .subscribe(session::sendMessage);
 
     }

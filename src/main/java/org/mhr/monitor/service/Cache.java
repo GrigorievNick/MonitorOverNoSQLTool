@@ -20,7 +20,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class Cache {
 
     private final Observable<DataEvent> replay;
-    private final Observable<DataEvent> live;
     private final Subscription dummySubscriptionForPrecache;
 
     @Autowired
@@ -28,8 +27,7 @@ public class Cache {
                  @Value("${cache.time.to.live:4}") String timeToCache,
                  @Value("${cache.time.unit:SECONDS}") String timeUnitToCache) {
         replay = client.find().replay(Long.valueOf(timeToCache), valueOf(timeUnitToCache)).refCount();
-        live = client.find().publish().refCount();
-        dummySubscriptionForPrecache = live.subscribe();
+        dummySubscriptionForPrecache = replay.subscribe();
     }
 
     @PreDestroy
@@ -53,10 +51,6 @@ public class Cache {
                     && d.getTs() < cEvent.getEnd().getDate());
         }
         return filtered;
-    }
-
-    public Observable<DataEvent> getLive() {
-        return live;
     }
 
 }

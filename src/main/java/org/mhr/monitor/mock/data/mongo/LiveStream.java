@@ -1,12 +1,13 @@
 package org.mhr.monitor.mock.data.mongo;
 
-import com.google.common.collect.ImmutableMap;
 import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import com.mongodb.reactivestreams.client.Success;
-import java.util.Map;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
@@ -20,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.mhr.monitor.mock.data.mongo.EmbeddedMongoContainer.DATABASE_NAME;
 
 @Component
@@ -32,6 +34,10 @@ public class LiveStream {
 
     @Value("${table.size}")
     private long twoGB;
+
+    private final Random random = new Random();
+    private static final int DAY_PERIOD = 24 * 60 * 60 * 1000;
+
 
     @PostConstruct
     public void startStream() {
@@ -62,35 +68,17 @@ public class LiveStream {
     }
 
     @Scheduled(fixedRateString = "${mock.data.generation.rate:1000}")
-    //TODO over observable
     public void write() {
-        final MongoDatabase database = client.getDatabase(DATABASE_NAME);
-        final MongoCollection<Document> collection = database.getCollection(MongoClientUtils.COLLECTION_NAME);
-        final ImmutableMap.Builder<String, Object> opBuilder = ImmutableMap.<String, Object>builder()
-            .put(MongoClientUtils.TIME_COLUMN, System.currentTimeMillis());
-        for (int i = 0; i < 50; i++) {
-            opBuilder.put("Column_" + i, i);
-        }
-        Map<String, Object> map = opBuilder.build();
-
-        final Map<String, Object> depositOp = ImmutableMap.<String, Object>builder()
-            .put("operationType", OperationType.DEPOSIT.name())
-            .putAll(map)
-            .build();
-        final Map<String, Object> widthrawOp = ImmutableMap.<String, Object>builder()
-            .put("operationType", OperationType.WIDTHRAW.name())
-            .putAll(map)
-            .build();
-        final Map<String, Object> transferOp = ImmutableMap.<String, Object>builder()
-            .put("operationType", OperationType.TRANSFER.name())
-            .putAll(map)
-            .build();
-        collection.insertMany(
-            asList(new Document(depositOp), new Document(transferOp), new Document(widthrawOp))
-        ).subscribe(new Subscriber<Success>() {
+        client.getDatabase(DATABASE_NAME)
+            .getCollection(MongoClientUtils.COLLECTION_NAME)
+            .insertMany(
+                asList(new Document(generateDocument(System.currentTimeMillis())),
+                    new Document(generateDocument(System.currentTimeMillis())),
+                    new Document(generateDocument(System.currentTimeMillis())))
+            ).subscribe(new Subscriber<Success>() {
             @Override
             public void onSubscribe(Subscription s) {
-                s.request(10);
+                s.request(1);
             }
 
             @Override
@@ -110,5 +98,60 @@ public class LiveStream {
         });
     }
 
+    private Document generateDocument(Long created) {
+        OperationType type = OperationType.values()[random.nextInt(OperationType.values().length)];
+        Document document = new Document();
+        generateFieldList(49).forEach(f -> generateField(f, document));
+
+        document.put("operationType", type.name());
+        document.put(MongoClientUtils.TIME_COLUMN, created);
+        return document;
+    }
+
+    private void generateField(String fieldName, Document document) {
+        switch (fieldName.split("_")[0]) {
+            case "STRING":
+                document.put(fieldName, generateString());
+                break;
+            case "INTEGER":
+                document.put(fieldName, generateInteger());
+                break;
+            case "TIMESTAMP":
+                document.put(fieldName, generateTimestamp());
+                break;
+            case "BOOLEAN":
+                document.put(fieldName, generateBoolean());
+                break;
+        }
+    }
+
+    private List<String> generateFieldList(int size) {
+        String[] array = new String[]{"INTEGER", "BOOLEAN", "STRING", "TIMESTAMP"};
+        return IntStream.rangeClosed(0, size)
+            .mapToObj(i -> array[random.nextInt(array.length)] + "_" + i)
+            .collect(toList());
+    }
+
+    private String generateString() {
+        int length = 1 + random.nextInt(10);
+        char[] array = new char[length];
+        for (int i = 0; i < length; i++) {
+            array[i] = (char) ('a' + random.nextInt(26));
+        }
+        return String.valueOf(array);
+    }
+
+    private int generateInteger() {
+        return random.nextInt(100000);
+    }
+
+    private Date generateTimestamp() {
+        int periodLocation = random.nextInt(DAY_PERIOD);
+        return new Date(System.currentTimeMillis() - periodLocation);
+    }
+
+    private boolean generateBoolean() {
+        return random.nextInt(2) == 0;
+    }
 
 }
